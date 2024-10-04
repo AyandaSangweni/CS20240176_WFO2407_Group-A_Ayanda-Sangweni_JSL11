@@ -1,12 +1,6 @@
 import { getTasks,createNewTask,patchTask,putTask,deleteTask } from "./utils/taskFunctions.js";
 import {initialData} from "./initialData.js";
 
-
-
-/*************************************************************************************************************************************************
- * FIX BUGS!!!
- * **********************************************************************************************************************************************/
-
 // Function checks if local storage already has data, if not it loads initialData to localStorage
 function initializeData() {
   if (!localStorage.getItem('tasks')) {
@@ -20,7 +14,15 @@ initializeData();
 
 // TASK: Get elements from the DOM
 const elements = {
-
+  headerBoardName: document.getElementById('header-board-name'),
+  filterDiv: document.getElementById('filterDiv'),
+  themeSwitch: document.getElementById('switch'),
+  columnDivs: document.querySelectorAll('.column-div'),
+  editTaskModal: document.querySelector('.edit-task-modal-window'),
+  hideSideBarBtn: document.getElementById('hide-side-bar-btn'),
+  showSideBarBtn: document.getElementById('show-side-bar-btn'),
+  createNewTaskBtn: document.getElementById('add-new-task-btn'),
+  modalWindow: document.getElementById('new-task-modal-window'),
 }
 
 let activeBoard = "";
