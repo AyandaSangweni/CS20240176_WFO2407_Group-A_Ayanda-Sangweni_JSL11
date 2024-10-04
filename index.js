@@ -1,16 +1,16 @@
-import { getTasks,createNewTask,patchTask,putTask,deleteTask } from "./utils/taskFunctions.js";
-import {initialData} from "./initialData.js";
+import { createNewTask, deleteTask, getTasks, patchTask } from './utils/taskFunctions.js';
+import { initialData } from './initialData.js';
+
 
 // Function checks if local storage already has data, if not it loads initialData to localStorage
 function initializeData() {
   if (!localStorage.getItem('tasks')) {
     localStorage.setItem('tasks', JSON.stringify(initialData)); 
-    localStorage.setItem('showSideBar', 'true');
+    localStorage.setItem('showSideBar', 'true')
   } else {
     console.log('Data already exists in localStorage');
   }
 }
-initializeData();
 
 // TASK: Get elements from the DOM
 const elements = {
@@ -51,6 +51,7 @@ function displayBoards(boards) {
     const boardElement = document.createElement("button");
     boardElement.textContent = board;
     boardElement.classList.add("board-btn");
+
     boardElement.addEventListener('click', () =>  { 
       elements.headerBoardName.textContent = board;
       filterAndDisplayTasksByBoard(board);
@@ -106,12 +107,10 @@ function refreshTasksUI() {
 // Styles the active board by adding an active class
 // TASK: Fix Bugs
 function styleActiveBoard(boardName) {
-  document.querySelectorAll('.board-btn').foreach(btn => { 
-    
-    if(btn.textContent === boardName) {
-      btn.classList.add('active') 
-    }
-    else {
+  document.querySelectorAll('.board-btn').forEach(btn => { 
+    if (btn.textContent.trim() === boardName) {
+      btn.classList.add('active'); 
+    } else {
       btn.classList.remove('active'); 
     }
   });
@@ -138,7 +137,7 @@ function addTaskToUI(task) {
   taskElement.textContent = task.title; // Modify as needed
   taskElement.setAttribute('data-task-id', task.id);
   
-  tasksContainer.appendChild(taskElement); 
+  tasksContainer.appendChild(); 
 }
 
 
@@ -192,11 +191,14 @@ function toggleModal(show, modal = elements.modalWindow) {
 
 function addTask(event) {
   event.preventDefault(); 
-
-  //Assign user input to the task object
     const task = {
-      
+      id: Date.now(),
+    title: document.getElementById('title-input').value,
+    description: document.getElementById('desc-input').value,
+    status: document.getElementById('select-status').value,
+    board: activeBoard
     };
+
     const newTask = createNewTask(task);
     if (newTask) {
       addTaskToUI(newTask);
@@ -207,45 +209,42 @@ function addTask(event) {
     }
 }
 
-
 function toggleSidebar(show) {
- 
+  const sideBar = document.getElementById('side-bar-div');
+  sideBar.style.display = show ? 'block' : 'none';
+  elements.showSideBarBtn.style.display = show ? 'none' : 'block';
+  elements.hideSideBarBtn.style.display = show ? 'flex' : 'none';
+  localStorage.setItem('showSideBar', show ? 'true' : 'false');
 }
 
 function toggleTheme() {
- 
+  const isLightTheme = document.body.classList.toggle('light-theme');
+  localStorage.setItem('light-theme', isLightTheme ? 'enabled' : 'disabled');
 }
 
 
 
 function openEditTaskModal(task) {
-  // Set task details in modal inputs
-  
-
-  // Get button elements from the task modal
-
-
-  // Call saveTaskChanges upon click of Save Changes button
- 
-
-  // Delete task using a helper function and close the task modal
-
+  document.getElementById('edit-task-title-input').value = task.title;
+  document.getElementById('edit-task-desc-input').value = task.description;
+  document.getElementById('edit-select-status').value = task.status;
+  document.getElementById('save-task-changes-btn').onclick = () => saveTaskChanges(task.id);
+  document.getElementById('delete-task-btn').onclick = () => { deleteTask(task.id);toggleModal(false, elements.editTaskModal);
+    refreshTasksUI();
+  }; 
 
   toggleModal(true, elements.editTaskModal); // Show the edit task modal
 }
 
 function saveTaskChanges(taskId) {
-  // Get new user inputs
-  
-
-  // Create an object with the updated task details
-
-
-  // Update task using a hlper functoin
- 
-
-  // Close the modal and refresh the UI to reflect the changes
-
+  const updatedTask = {
+    title: document.getElementById('edit-task-title-input').value,
+    description: document.getElementById('edit-task-desc-input').value,
+    status: document.getElementById('edit-select-status').value,
+    board: activeBoard
+  };
+  patchTask(taskId, updatedTask);
+  toggleModal(false, elements.editTaskModal);
   refreshTasksUI();
 }
 
